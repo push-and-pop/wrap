@@ -1,5 +1,6 @@
 mod error;
 mod ringbuffer;
+mod ringbuffer2;
 
 #[cfg(test)]
 mod tests {
