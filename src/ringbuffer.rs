@@ -1,26 +1,26 @@
-use std::{error::Error, ops::Deref};
+use std::{borrow::BorrowMut, error::Error, ops::Deref};
 #[derive(PartialEq, Eq, PartialOrd, Ord)]
-struct Node<'a> {
+struct Node {
     buf: Vec<u8>,
-    next: Option<&'a mut Box<Node<'a>>>,
+    next: Box<Option<Node>>,
 }
 
-impl<'a> Node<'a> {
+impl Node {
     #[inline]
     pub fn len(&self) -> usize {
         return self.buf.len();
     }
 }
 
-struct Buffer<'a> {
+struct Buffer {
     bs: Vec<Vec<u8>>,
-    head: Option<Box<Node<'a>>>,
-    tail: Option<&'a mut Box<Node<'a>>>,
+    head: Box<Option<Node>>,
+    tail: Box<Option<Node>>,
     size: isize,
     bytes: isize,
 }
 
-impl<'a> Buffer<'a> {
+impl Buffer {
     // Read reads data from the Buffer.
     pub fn read(&self, p: Vec<u8>) -> Result<isize, &'static str> {
         if p.len() == 0 {
@@ -30,14 +30,15 @@ impl<'a> Buffer<'a> {
     }
 
     // pop returns and removes the head of l. If l is empty, it returns nil.
-    pub fn pop(mut self) -> Option<Box<Node>> {
-        match self.head {
-            None => None,
+    pub fn pop(mut self) -> Box<Option<Node>> {
+        match self.head.as_ref() {
+            None => Box::new(None),
             Some(_) => {
                 let mut b = self.head;
+                //self.tail.insert(value)
                 //if let Some(tail) = b {};
-                self.tail = b.as_deref_mut().unwrap().next;
-                if self.tail == None {}
+                *self.tail = b.as_mut().take();
+                if self.tail == Box::new(None) {}
                 return b;
             }
         }
