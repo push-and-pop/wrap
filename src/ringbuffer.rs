@@ -1,4 +1,4 @@
-use std::ptr;
+use std::{ptr, vec::Vec};
 #[derive(PartialEq, Eq, PartialOrd, Ord)]
 struct Node {
     buf: Vec<u8>,
@@ -21,16 +21,49 @@ struct Buffer {
 }
 
 impl Buffer {
+    // func (llb *Buffer) Read(p []byte) (n int, err error) {
+    // 	if len(p) == 0 {
+    // 		return 0, nil
+    // 	}
+
+    // 	for b := llb.pop(); b != nil; b = llb.pop() {
+    // 		m := copy(p[n:], b.buf)
+    // 		n += m
+    // 		if m < b.len() {
+    // 			b.buf = b.buf[m:]
+    // 			llb.pushFront(b)
+    // 		} else {
+    // 			bsPool.Put(b.buf)
+    // 		}
+    // 		if n == len(p) {
+    // 			return
+    // 		}
+    // 	}
+    // 	return
+    // }
+
     // Read reads data from the Buffer.
-    pub fn read(&self, p: Vec<u8>) -> Result<isize, &'static str> {
+    pub fn read(&mut self, p: &[u8]) -> Result<isize, &'static str> {
         if p.len() == 0 {
             return Ok(0);
         }
-        return Ok(0);
+        let mut n = 0;
+        unsafe {
+            loop {
+                n += 1;
+                let mut b = self.pop();
+                if ptr::null_mut() == b {
+                    break;
+                }
+                p[..n];
+            }
+        }
+
+        return Ok(n as isize);
     }
 
     // pop returns and removes the head of l. If l is empty, it returns nil.
-    pub fn pop(mut self) -> *mut Node {
+    pub fn pop(&mut self) -> *mut Node {
         if ptr::null_mut() == self.head {
             return ptr::null_mut();
         }
@@ -47,17 +80,3 @@ impl Buffer {
         return b;
     }
 }
-// func (llb *Buffer) pop() *node {
-// 	if llb.head == nil {
-// 		return nil
-// 	}
-// 	b := llb.head
-// 	llb.head = b.next
-// 	if llb.head == nil {
-// 		llb.tail = nil
-// 	}
-// 	b.next = nil
-// 	llb.size--
-// 	llb.bytes -= b.len()
-// 	return b
-// }
