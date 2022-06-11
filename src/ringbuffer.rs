@@ -1,8 +1,8 @@
-use std::{borrow::BorrowMut, error::Error, ops::Deref};
+use std::ptr;
 #[derive(PartialEq, Eq, PartialOrd, Ord)]
 struct Node {
     buf: Vec<u8>,
-    next: Box<Option<Node>>,
+    next: *mut Node,
 }
 
 impl Node {
@@ -14,8 +14,8 @@ impl Node {
 
 struct Buffer {
     bs: Vec<Vec<u8>>,
-    head: Box<Option<Node>>,
-    tail: Box<Option<Node>>,
+    head: *mut Node,
+    tail: *mut Node,
     size: isize,
     bytes: isize,
 }
@@ -30,17 +30,34 @@ impl Buffer {
     }
 
     // pop returns and removes the head of l. If l is empty, it returns nil.
-    pub fn pop(mut self) -> Box<Option<Node>> {
-        match self.head.as_ref() {
-            None => Box::new(None),
-            Some(_) => {
-                let mut b = self.head;
-                //self.tail.insert(value)
-                //if let Some(tail) = b {};
-                *self.tail = b.as_mut().take();
-                if self.tail == Box::new(None) {}
-                return b;
-            }
+    pub fn pop(mut self) -> *mut Node {
+        if ptr::null_mut() == self.head {
+            return ptr::null_mut();
         }
+        let mut b = self.head;
+        unsafe {
+            self.head = (*b).next;
+            if ptr::null_mut() == self.head {
+                self.tail = ptr::null_mut();
+            }
+            (*b).next = ptr::null_mut();
+            self.size -= 1;
+            self.bytes -= (*b).len() as isize;
+        }
+        return b;
     }
 }
+// func (llb *Buffer) pop() *node {
+// 	if llb.head == nil {
+// 		return nil
+// 	}
+// 	b := llb.head
+// 	llb.head = b.next
+// 	if llb.head == nil {
+// 		llb.tail = nil
+// 	}
+// 	b.next = nil
+// 	llb.size--
+// 	llb.bytes -= b.len()
+// 	return b
+// }
