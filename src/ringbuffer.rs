@@ -42,27 +42,33 @@ impl Buffer {
     // 	return
     // }
 
-    // Read reads data from the Buffer.
-    pub fn read(&mut self, p: &[u8]) -> Result<isize, &'static str> {
+    /// Read reads data from the Buffer.
+    pub fn read(&mut self, p: &mut Vec<u8>) -> Result<isize, &'static str> {
         if p.len() == 0 {
             return Ok(0);
         }
         let mut n = 0;
         unsafe {
             loop {
-                n += 1;
                 let mut b = self.pop();
                 if ptr::null_mut() == b {
                     break;
                 }
-                p[..n];
+                let m = (*b).buf.len();
+                p.extend((*b).buf.iter());
+                n += m;
+                if m < (*b).len() {
+                    (*b).buf.drain(m..);
+                } else {
+                }
+                let (left, right) = p.split_at_mut(n);
             }
         }
 
         return Ok(n as isize);
     }
 
-    // pop returns and removes the head of l. If l is empty, it returns nil.
+    /// pop returns and removes the head of l. If l is empty, it returns nil.
     pub fn pop(&mut self) -> *mut Node {
         if ptr::null_mut() == self.head {
             return ptr::null_mut();

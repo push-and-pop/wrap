@@ -1,4 +1,5 @@
 mod error;
+mod pool;
 mod ringbuffer;
 
 #[cfg(test)]
