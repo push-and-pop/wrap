@@ -1,7 +1,7 @@
 mod error;
 mod pool;
 mod ringbuffer;
-
+mod stack;
 #[cfg(test)]
 mod tests {
     #[test]
