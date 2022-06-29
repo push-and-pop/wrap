@@ -1,7 +1,13 @@
+#[macro_use]
+mod utils;
 mod error;
 mod pool;
+mod queue;
 mod ringbuffer;
 mod stack;
+
+pub use queue::Queue;
+
 #[cfg(test)]
 mod tests {
     #[test]
