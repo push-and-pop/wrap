@@ -31,7 +31,6 @@ impl<T> Stack<T> {
         let mut node = Owned::new(Node {
             value: ManuallyDrop::new(t),
             next: Atomic::null(),
-            bb,
         });
 
         let guard = crossbeam_epoch::pin();
