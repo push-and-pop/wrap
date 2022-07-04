@@ -1,4 +1,5 @@
-use std::{ptr, vec::Vec};
+use core::ptr;
+use std::vec::Vec;
 #[derive(PartialEq, Eq, PartialOrd, Ord)]
 struct Node {
     buf: Vec<u8>,

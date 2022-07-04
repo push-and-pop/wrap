@@ -31,6 +31,7 @@ impl<T> Stack<T> {
         let mut node = Owned::new(Node {
             value: ManuallyDrop::new(t),
             next: Atomic::null(),
+            bb,
         });
 
         let guard = crossbeam_epoch::pin();
@@ -93,14 +94,12 @@ mod test {
         }
         scope(|scope| {
             for i in 0..10 {
-                scope
-                    .spawn(|_| {
-                        for i in 0..10000 {
-                            let a: i32 = stack.pop().unwrap().into();
-                            println!("{:#?}", a);
-                        }
-                    })
-                    .join();
+                scope.spawn(|_| {
+                    for i in 0..10000 {
+                        let a: i32 = stack.pop().unwrap().into();
+                        println!("{:#?}", a);
+                    }
+                });
             }
         })
         .unwrap();
